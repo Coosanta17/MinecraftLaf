@@ -34,6 +34,9 @@ jobs:
             any:
               - '**'
 
+      - id: Fortune
+        run: fortune | cowsay -f $(ls /usr/share/cows/ | shuf -n1)
+
   build-core:
     needs: determine-changes
     if: ${{ needs.determine-changes.outputs.core-changed == 'true' || needs.determine-changes.outputs.any-changed == 'true' }}
@@ -48,7 +51,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build Core
-        run: ./gradlew :minecraftlaf:build
+        run: chmod +x ./gradlew && ./gradlew :minecraftlaf:build
 
       - name: Upload Core Artifact
         uses: actions/upload-artifact@v4
@@ -70,7 +73,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build Demo
-        run: ./gradlew :minecraftlaf-demo:build
+        run: chmod +x ./gradlew && ./gradlew :minecraftlaf-demo:build
 
       - name: Upload Demo Artifact
         uses: actions/upload-artifact@v4
