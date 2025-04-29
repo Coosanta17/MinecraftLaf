@@ -1,0 +1,79 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  determine-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      core-changed: ${{ steps.filter.outputs.core }}
+      demo-changed: ${{ steps.filter.outputs.demo }}
+      any-changed: ${{ steps.filter.outputs.any }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            core:
+              - 'minecraftlaf/**'
+              - 'build.gradle.kts'
+              - 'gradle/**'
+              - 'settings.gradle.kts'
+            demo:
+              - 'minecraftlaf-demo/**'
+              - 'build.gradle.kts'
+              - 'gradle/**'
+              - 'settings.gradle.kts'
+            any:
+              - '**'
+
+  build-core:
+    needs: determine-changes
+    if: ${{ needs.determine-changes.outputs.core-changed == 'true' || needs.determine-changes.outputs.any-changed == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build Core
+        run: ./gradlew :minecraftlaf:build
+
+      - name: Upload Core Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minecraftlaf
+          path: minecraftlaf/build/libs/*.jar
+
+  build-demo:
+    needs: [determine-changes, build-core]
+    if: ${{ needs.determine-changes.outputs.demo-changed == 'true' || needs.determine-changes.outputs.any-changed == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build Demo
+        run: ./gradlew :minecraftlaf-demo:build
+
+      - name: Upload Demo Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minecraftlaf-demo
+          path: minecraftlaf-demo/build/libs/*.jar
