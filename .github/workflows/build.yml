@@ -35,7 +35,7 @@ jobs:
               - '**'
 
       - id: Fortune
-        run: fortune | cowsay -f $(ls /usr/share/cows/ | shuf -n1)
+        run: sudo apt-get update && sudo apt-get install -y fortune-mod cowsay && fortune | cowsay -f $(ls /usr/share/cows/ | shuf -n1)
 
   build-core:
     needs: determine-changes
