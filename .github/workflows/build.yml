@@ -48,6 +48,9 @@ jobs:
       - name: Setup Gradle cache
         uses: gradle/gradle-build-action@v2
 
+      - name: Make Gradlew Wrapper Executable
+        run: chmod +x ./gradlew
+
       - name: Build Core
         if: ${{ needs.determine-changes.outputs.core-changed == 'true' }}
         run: ./gradlew :minecraftlaf:build
