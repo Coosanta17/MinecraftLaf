@@ -29,7 +29,7 @@ jobs:
               - 'build.gradle.kts'
               - 'gradle/**'
               - 'settings.gradle.kts'
-              - '.github/workflows/*.yml
+              - '.github/workflows/*.yml'
 
   build:
     needs: determine-changes
