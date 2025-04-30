@@ -41,6 +41,14 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: "Debug: locate any wrapper JARs"
+        run: |
+          echo "Files in gradle/wrapper:"
+          find gradle/wrapper -type f || echo "none found"
+          echo "Files in root:"
+          ls -l gradlew* || echo "none found"
+
+
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
 
